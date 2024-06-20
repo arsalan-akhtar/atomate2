@@ -191,7 +191,8 @@ class RelaxMaker(BaseAbinitMaker):
         # TODO: add the possibility to tune the RelaxInputGenerator options
         #  in this class method.
         return cls(
-            input_set_generator=RelaxSetGenerator(*args, relax_cell=True, **kwargs)
+            input_set_generator=RelaxSetGenerator(*args, relax_cell=True, **kwargs),
+            name=cls.name + " (ions and cells)",
         )
 
 #AA
@@ -236,5 +237,6 @@ class MLRelaxMaker(BaseAbinitMaker):
                                                   relax_cell=True,
                                                   user_abinit_settings={"nn_name":'"chgnet"',
                                                                         "ionmov":31},
-                                                  **kwargs)
+                                                  **kwargs),
+            name=cls.name + " (ions and cells)",                                                  
         )
