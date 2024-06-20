@@ -193,3 +193,48 @@ class RelaxMaker(BaseAbinitMaker):
         return cls(
             input_set_generator=RelaxSetGenerator(*args, relax_cell=True, **kwargs)
         )
+
+#AA
+@dataclass
+class MLRelaxMaker(BaseAbinitMaker):
+    """ Maker to create ml relaxation calculations.
+        TODO: Fixing/Registering nn_name in abipy
+    """
+
+
+    calc_type: str = "relax"
+    input_set_generator: AbinitInputGenerator = field(default_factory=RelaxSetGenerator)
+    name: str = "ML Relaxation calculation"
+
+    # non-dataclass variables
+    CRITICAL_EVENTS: ClassVar[Sequence[AbinitCriticalWarning]] = (
+        RelaxConvergenceWarning,
+    )
+
+    @classmethod
+    def ionic_relaxation(cls, *args, **kwargs) -> Job:
+        """Create an ionic relaxation maker."""
+        # TODO: add the possibility to tune the RelaxInputGenerator options
+        #  in this class method.
+        return cls(
+            input_set_generator=RelaxSetGenerator(*args, 
+                                                  relax_cell=False,
+                                                  user_abinit_settings={"nn_name":'"chgnet"',
+                                                                        "ionmov":31},
+                                                  **kwargs),
+            #input_set_generator=update_user_abinit_settings(input_set_generator,{"nn_name":"'chgnet'"}),
+            name=cls.name + " (ions only)",
+        )
+
+    @classmethod
+    def full_relaxation(cls, *args, **kwargs) -> Job:
+        """Create a full relaxation maker."""
+        # TODO: add the possibility to tune the RelaxInputGenerator options
+        #  in this class method.
+        return cls(
+            input_set_generator=RelaxSetGenerator(*args,
+                                                  relax_cell=True,
+                                                  user_abinit_settings={"nn_name":'"chgnet"',
+                                                                        "ionmov":31},
+                                                  **kwargs)
+        )
