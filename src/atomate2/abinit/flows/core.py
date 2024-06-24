@@ -12,6 +12,8 @@ from atomate2.abinit.jobs.core import (
     RelaxMaker,
     StaticMaker,
     UniformNonSCFMaker,
+    AARelaxMaker,  #AA
+    AAMLRelaxMaker, #AA
 )
 
 if TYPE_CHECKING:
@@ -137,3 +139,56 @@ class RelaxFlowMaker(Maker):
         ion_rlx_maker = RelaxMaker.ionic_relaxation(*args, **kwargs)
         ioncell_rlx_maker = RelaxMaker.full_relaxation(*args, **kwargs)
         return cls(relaxation_makers=[ion_rlx_maker, ioncell_rlx_maker])
+
+
+@dataclass
+class AAIonicRelaxFlowMaker(Maker):
+    """
+    Maker to generate a ionic relaxation flow with abinit and abiml.
+
+    Parameters
+    ----------
+    name : str
+        Name of the flows produced by this maker.
+    relaxation_makers : .BaseAbinitMaker
+        The maker or list of makers to use for the relaxation flow.
+    """
+
+    name: str = "Ionic ML-Abinit Relaxation Flow"
+    abinit_maker: AARelaxMaker = field(default_factory=lambda:[AARelaxMaker.ionic_relaxation()])
+    abinit_ml_maker: AAMLRelaxMaker = field(default_factory=lambda:[AAMLRelaxMaker.ionic_relaxation()])
+
+    def make(
+        self,
+        structure: Structure | None = None,
+        restart_from: str | Path | None = None,
+    ) -> Flow:
+        """Create a relaxation flow.
+
+        Parameters
+        ----------
+        structure : Structure
+            A pymatgen structure object.
+        restart_from : str or Path or None
+            One previous directory to restart from.
+
+        Returns
+        -------
+        Flow
+            A relaxation flow.
+        """
+        jobs = []
+        if self.abinit_maker:
+            print("abinit relaxation")
+            abinit_job = self.abinit_maker[0].make(structure=structure, restart_from=restart_from)
+            jobs.append(abinit_job)
+
+        if self.abinit_ml_maker:
+            print("abinit-ml relaxation")
+            abinit_ml_job = self.abinit_ml_maker[0].make(structure=structure, restart_from=restart_from)
+            jobs.append(abinit_ml_job)
+            
+        return Flow(jobs, name=self.name)     
+
+
+

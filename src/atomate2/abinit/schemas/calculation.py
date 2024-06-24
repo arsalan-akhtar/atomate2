@@ -9,6 +9,8 @@ from pathlib import Path
 from typing import Optional, Union
 
 from abipy.electrons.gsr import GsrFile
+from abipy.dynamics.hist import HistFile #AA
+
 from abipy.flowtk import events
 from abipy.flowtk.utils import File
 from emmet.core.math import Matrix3D, Vector3D
@@ -103,11 +105,15 @@ class CalculationOutput(BaseModel):
         description="The valence band maximum, or HOMO for molecules, in eV "
         "(if system is not metallic)",
     )
+    num_steps: Optional[float] = Field(
+        None, description="Number of Iterations"
+    )
 
     @classmethod
     def from_abinit_gsr(
         cls,
         output: GsrFile,  # Must use auto_load kwarg when passed
+        output_hist: Optional[HistFile] = None #AA
     ) -> Self:
         """Create an Abinit output document from Abinit outputs.
 
@@ -150,6 +156,14 @@ class CalculationOutput(BaseModel):
         if output.cart_stress_tensor is not None:
             stress = output.cart_stress_tensor.tolist()
 
+        ## AA 
+        # Hist file 
+        #-------------
+        num_steps = None #float(1.0)
+        if output_hist is not None :
+            if output_hist.num_steps is not None:
+                num_steps = output_hist.num_steps 
+
         return cls(
             structure=structure,
             energy=output.energy,
@@ -157,6 +171,7 @@ class CalculationOutput(BaseModel):
             **electronic_output,
             forces=forces,
             stress=stress,
+            num_steps=num_steps,
         )
 
 
@@ -206,6 +221,7 @@ class Calculation(BaseModel):
         dir_name: Path | str,
         task_name: str,
         abinit_gsr_file: Path | str = "out_GSR.nc",
+        abinit_hist_file: Path | str = "out_HIST.nc", #AA
         abinit_log_file: Path | str = LOG_FILE_NAME,
         abinit_abort_file: Path | str = MPIABORTFILE,
     ) -> tuple[Self, dict[AbinitObject, dict]]:
@@ -230,15 +246,20 @@ class Calculation(BaseModel):
             An Abinit calculation document.
         """
         dir_name = Path(dir_name)
-        abinit_gsr_file = dir_name / abinit_gsr_file
+        #print(f"debug: {dir_name=}") #AA
+        abinit_gsr_file = dir_name /  abinit_gsr_file  # AA
+        abinit_hist_file = dir_name / abinit_hist_file # AA
+        #print(f"debug: {abinit_hist_file=}") #AA
+
         abinit_log_file = dir_name / abinit_log_file
         abinit_abort_file = dir_name / abinit_abort_file
 
         abinit_gsr = GsrFile.from_file(abinit_gsr_file)
-
+        abinit_hist = HistFile.from_file(abinit_hist_file) #AA
         completed_at = str(datetime.fromtimestamp(os.stat(abinit_log_file).st_mtime))
 
-        output_doc = CalculationOutput.from_abinit_gsr(abinit_gsr)
+        output_doc = CalculationOutput.from_abinit_gsr(abinit_gsr,abinit_hist) #AA
+        #output_doc = CalculationOutput.from_abinit_gsr(abinit_gsr) #AA      
 
         report = None
         has_abinit_completed = TaskState.FAILED

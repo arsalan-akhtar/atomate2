@@ -196,16 +196,14 @@ class RelaxMaker(BaseAbinitMaker):
         )
 
 #AA
+#-------------------------------------------------
 @dataclass
-class MLRelaxMaker(BaseAbinitMaker):
-    """ Maker to create ml relaxation calculations.
-        TODO: Fixing/Registering nn_name in abipy
-    """
-
+class AARelaxMaker(BaseAbinitMaker):
+    """Maker to create relaxation calculations."""
 
     calc_type: str = "relax"
     input_set_generator: AbinitInputGenerator = field(default_factory=RelaxSetGenerator)
-    name: str = "ML Relaxation calculation"
+    name: str = "Relaxation calculation"
 
     # non-dataclass variables
     CRITICAL_EVENTS: ClassVar[Sequence[AbinitCriticalWarning]] = (
@@ -217,6 +215,44 @@ class MLRelaxMaker(BaseAbinitMaker):
         """Create an ionic relaxation maker."""
         # TODO: add the possibility to tune the RelaxInputGenerator options
         #  in this class method.
+        return cls(
+            input_set_generator=RelaxSetGenerator(*args, relax_cell=False, **kwargs),
+            name=cls.name + " (ions only)",
+        )
+
+    @classmethod
+    def full_relaxation(cls, *args, **kwargs) -> Job:
+        """Create a full relaxation maker."""
+        # TODO: add the possibility to tune the RelaxInputGenerator options
+        #  in this class method.
+        return cls(
+            input_set_generator=RelaxSetGenerator(*args, relax_cell=True, **kwargs),
+            name=cls.name + " (ions and cells)",
+        )
+
+
+@dataclass
+class AAMLRelaxMaker(BaseAbinitMaker):
+    """ Maker to create ml relaxation calculations.
+        TODO: Fixing/Registering nn_name in abipy
+    """
+
+
+    calc_type: str = "relax"
+    input_set_generator: AbinitInputGenerator = field(default_factory=RelaxSetGenerator)
+    name: str = "ML-Abinit Relaxation calculation"
+
+    # non-dataclass variables
+    CRITICAL_EVENTS: ClassVar[Sequence[AbinitCriticalWarning]] = (
+        RelaxConvergenceWarning,
+    )
+
+    @classmethod
+    def ionic_relaxation(cls, *args, **kwargs) -> Job:
+        """Create an ionic relaxation maker."""
+        # TODO: add the possibility to tune the RelaxInputGenerator options
+        #  in this class method.
+        print("ionic_relaxation")
         return cls(
             input_set_generator=RelaxSetGenerator(*args, 
                                                   relax_cell=False,
@@ -232,6 +268,7 @@ class MLRelaxMaker(BaseAbinitMaker):
         """Create a full relaxation maker."""
         # TODO: add the possibility to tune the RelaxInputGenerator options
         #  in this class method.
+        print("full_relaxation")
         return cls(
             input_set_generator=RelaxSetGenerator(*args,
                                                   relax_cell=True,

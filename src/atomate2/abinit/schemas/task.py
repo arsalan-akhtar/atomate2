@@ -109,6 +109,7 @@ class OutputDoc(BaseModel):
     stress: Optional[Matrix3D] = Field(
         None, description="Stress on the unit cell from the last calculation"
     )
+    num_steps: Optional[float] = Field (None,description="Number of Iterations") # AA
 
     @classmethod
     def from_abinit_calc_doc(cls, calc_doc: Calculation) -> Self:
@@ -133,6 +134,7 @@ class OutputDoc(BaseModel):
             vbm=calc_doc.output.vbm,
             forces=calc_doc.output.forces,
             stress=calc_doc.output.stress,
+            num_steps=calc_doc.output.num_steps,
         )
 
 
@@ -364,6 +366,9 @@ def _find_abinit_files(
                 abinit_files["abinit_log_file"] = Path(file).relative_to(path)
             elif file.match(f"*{MPIABORTFILE}{suffix}*"):
                 abinit_files["abinit_abort_file"] = Path(file).relative_to(path)
+            elif file.match(f"*outdata/out_HIST{suffix}*"):
+                print("DEBUG here is the file")
+                abinit_files["abinit_hist_file"] = Path(file).relative_to(path)
 
         return abinit_files
 
