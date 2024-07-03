@@ -193,6 +193,9 @@ class Atomate2Settings(BaseSettings):
 
     # ABINIT settings
     ABINIT_MPIRUN_CMD: Optional[str] = Field(None, description="Mpirun command.")
+    ##AA Later it will be converted to str 
+    ABINIT_MPIRUN_NP: Optional[int] = Field(None, description="Mpirun -np number in int")
+    ##AA
     ABINIT_CMD: str = Field("abinit", description="Abinit command.")
     ABINIT_MRGDDB_CMD: str = Field("mrgddb", description="Mrgddb command.")
     ABINIT_ANADDB_CMD: str = Field("anaddb", description="Anaddb command.")
