@@ -182,7 +182,7 @@ class RelaxMaker(BaseAbinitMaker):
         #  in this class method.
         return cls(
             input_set_generator=RelaxSetGenerator(*args, relax_cell=False, **kwargs),
-            name=cls.name + " (ions only)",
+            name=cls.name + "-ions-only",
         )
 
     @classmethod
@@ -192,7 +192,7 @@ class RelaxMaker(BaseAbinitMaker):
         #  in this class method.
         return cls(
             input_set_generator=RelaxSetGenerator(*args, relax_cell=True, **kwargs),
-            name=cls.name + " (ions and cells)",
+            name=cls.name + "-ions-and-cells",
         )
 
 #AA
@@ -217,7 +217,7 @@ class AARelaxMaker(BaseAbinitMaker):
         #  in this class method.
         return cls(
             input_set_generator=RelaxSetGenerator(*args, relax_cell=False, **kwargs),
-            name=cls.name + " (ions only)",
+            name=cls.name + "-ions-only",
         )
 
     @classmethod
@@ -227,7 +227,7 @@ class AARelaxMaker(BaseAbinitMaker):
         #  in this class method.
         return cls(
             input_set_generator=RelaxSetGenerator(*args, relax_cell=True, **kwargs),
-            name=cls.name + " (ions and cells)",
+            name=cls.name + "-ions-and-cells)",
         )
 
 
@@ -260,7 +260,7 @@ class AAMLRelaxMaker(BaseAbinitMaker):
                                                                         "ionmov":31},
                                                   **kwargs),
             #input_set_generator=update_user_abinit_settings(input_set_generator,{"nn_name":"'chgnet'"}),
-            name=cls.name + " (ions only)",
+            name=cls.name + "-ions-only",
         )
 
     @classmethod
@@ -275,5 +275,5 @@ class AAMLRelaxMaker(BaseAbinitMaker):
                                                   user_abinit_settings={"nn_name":'"chgnet"',
                                                                         "ionmov":31},
                                                   **kwargs),
-            name=cls.name + " (ions and cells)",                                                  
+            name=cls.name + "-ions-and-cells",                                                  
         )
