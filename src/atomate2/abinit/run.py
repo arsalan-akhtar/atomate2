@@ -36,10 +36,13 @@ def run_abinit(
     mpirun_cmd = mpirun_cmd or SETTINGS.ABINIT_MPIRUN_CMD
     mpirun_np = mpirun_np or SETTINGS.ABINIT_MPIRUN_NP
     start_time = start_time or time.time()
-    command = [mpirun_cmd,"-np",str(mpirun_np), abinit_cmd] if mpirun_cmd is not None else [abinit_cmd]
+    if mpirun_np is not None:
+        command = [mpirun_cmd,"-np",str(mpirun_np), abinit_cmd] if mpirun_cmd is not None else [abinit_cmd]
+    else:
+        command = [mpirun_cmd, abinit_cmd] if mpirun_cmd is not None else [abinit_cmd]
     ##AA
-    #print(f"Debug: {command=}")
-    #print(f"Debug: {mpirun_np=}")
+    print(f"Debug: {command=}")
+    print(f"Debug: {mpirun_np=}")
 
     max_end_time = 0.0
     if wall_time is not None:
@@ -53,7 +56,7 @@ def run_abinit(
 
     command.append(INPUT_FILE_NAME)
     ##AA
-    #print(f"Debug: {command=}")
+    print(f"Debug: {command=}")
     ##AA
     with open(LOG_FILE_NAME, "w") as stdout, open(STDERR_FILE_NAME, "w") as stderr:
         process = subprocess.Popen(command, stdout=stdout, stderr=stderr)  # noqa: S603
