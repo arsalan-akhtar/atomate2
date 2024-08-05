@@ -197,38 +197,38 @@ class RelaxMaker(BaseAbinitMaker):
 
 #AA
 #-------------------------------------------------
-@dataclass
-class AARelaxMaker(BaseAbinitMaker):
-    """Maker to create relaxation calculations."""
+# @dataclass
+# class AARelaxMaker(BaseAbinitMaker):
+#     """Maker to create relaxation calculations."""
 
-    calc_type: str = "relax"
-    input_set_generator: AbinitInputGenerator = field(default_factory=RelaxSetGenerator)
-    name: str = "Relaxation calculation"
+#     calc_type: str = "relax"
+#     input_set_generator: AbinitInputGenerator = field(default_factory=RelaxSetGenerator)
+#     name: str = "Relaxation calculation"
 
-    # non-dataclass variables
-    CRITICAL_EVENTS: ClassVar[Sequence[AbinitCriticalWarning]] = (
-        RelaxConvergenceWarning,
-    )
+#     # non-dataclass variables
+#     CRITICAL_EVENTS: ClassVar[Sequence[AbinitCriticalWarning]] = (
+#         RelaxConvergenceWarning,
+#     )
 
-    @classmethod
-    def ionic_relaxation(cls, *args, **kwargs) -> Job:
-        """Create an ionic relaxation maker."""
-        # TODO: add the possibility to tune the RelaxInputGenerator options
-        #  in this class method.
-        return cls(
-            input_set_generator=RelaxSetGenerator(*args, relax_cell=False, **kwargs),
-            name=cls.name + "-ions-only",
-        )
+#     @classmethod
+#     def ionic_relaxation(cls, *args, **kwargs) -> Job:
+#         """Create an ionic relaxation maker."""
+#         # TODO: add the possibility to tune the RelaxInputGenerator options
+#         #  in this class method.
+#         return cls(
+#             input_set_generator=RelaxSetGenerator(*args, relax_cell=False, **kwargs),
+#             name=cls.name + "-ions-only",
+#         )
 
-    @classmethod
-    def full_relaxation(cls, *args, **kwargs) -> Job:
-        """Create a full relaxation maker."""
-        # TODO: add the possibility to tune the RelaxInputGenerator options
-        #  in this class method.
-        return cls(
-            input_set_generator=RelaxSetGenerator(*args, relax_cell=True, **kwargs),
-            name=cls.name + "-ions-and-cells)",
-        )
+#     @classmethod
+#     def full_relaxation(cls, *args, **kwargs) -> Job:
+#         """Create a full relaxation maker."""
+#         # TODO: add the possibility to tune the RelaxInputGenerator options
+#         #  in this class method.
+#         return cls(
+#             input_set_generator=RelaxSetGenerator(*args, relax_cell=True, **kwargs),
+#             name=cls.name + "-ions-and-cells)",
+#         )
 
 
 @dataclass
@@ -240,7 +240,7 @@ class AAMLRelaxMaker(BaseAbinitMaker):
 
     calc_type: str = "relax"
     input_set_generator: AbinitInputGenerator = field(default_factory=RelaxSetGenerator)
-    name: str = "ML-Abinit Relaxation calculation"
+    name: str = "ML-Abinit Relaxation"
 
     # non-dataclass variables
     CRITICAL_EVENTS: ClassVar[Sequence[AbinitCriticalWarning]] = (
@@ -252,16 +252,84 @@ class AAMLRelaxMaker(BaseAbinitMaker):
         """Create an ionic relaxation maker."""
         # TODO: add the possibility to tune the RelaxInputGenerator options
         #  in this class method.
-        print("ionic_relaxation")
+        print("ionic-relaxation-3")
+        return cls(
+            input_set_generator=RelaxSetGenerator(*args, relax_cell=False, **kwargs),
+            name=cls.name + "-3-ions-only",
+        )
+
+    @classmethod
+    def ionic_relaxation_30_none(cls, *args, **kwargs) -> Job:
+        """Create an ionic relaxation maker."""
+        # TODO: add the possibility to tune the RelaxInputGenerator options
+        #  in this class method.
+        print("ionic-relaxation-30-none")
         return cls(
             input_set_generator=RelaxSetGenerator(*args, 
                                                   relax_cell=False,
                                                   user_abinit_settings={"nn_name":'"chgnet"',
-                                                                        "ionmov":31},
+                                                                        "ionmov":30,
+                                                                        "useria":0,
+                                                                        },
                                                   **kwargs),
             #input_set_generator=update_user_abinit_settings(input_set_generator,{"nn_name":"'chgnet'"}),
-            name=cls.name + "-ions-only",
+            name=cls.name + "-30-none-ions-only",
         )
+    
+    @classmethod
+    def ionic_relaxation_30_delta(cls, *args, **kwargs) -> Job:
+        """Create an ionic relaxation maker."""
+        # TODO: add the possibility to tune the RelaxInputGenerator options
+        #  in this class method.
+        print("ionic-relaxation-30-delta")
+        return cls(
+            input_set_generator=RelaxSetGenerator(*args, 
+                                                  relax_cell=False,
+                                                  user_abinit_settings={"nn_name":'"chgnet"',
+                                                                        "ionmov":30,
+                                                                        "useria":1,
+                                                                        },
+                                                  **kwargs),
+            #input_set_generator=update_user_abinit_settings(input_set_generator,{"nn_name":"'chgnet'"}),
+            name=cls.name + "-30-delta-ions-only",
+        )
+
+    @classmethod
+    def ionic_relaxation_31_none(cls, *args, **kwargs) -> Job:
+        """Create an ionic relaxation maker."""
+        # TODO: add the possibility to tune the RelaxInputGenerator options
+        #  in this class method.
+        print("ionic-relaxation-31-none")
+        return cls(
+            input_set_generator=RelaxSetGenerator(*args, 
+                                                  relax_cell=False,
+                                                  user_abinit_settings={"nn_name":'"chgnet"',
+                                                                        "ionmov":31,
+                                                                        "useria":0,
+                                                                        },
+                                                  **kwargs),
+            #input_set_generator=update_user_abinit_settings(input_set_generator,{"nn_name":"'chgnet'"}),
+            name=cls.name + "-31-none-ions-only",
+        )
+    
+    @classmethod
+    def ionic_relaxation_31_delta(cls, *args, **kwargs) -> Job:
+        """Create an ionic relaxation maker."""
+        # TODO: add the possibility to tune the RelaxInputGenerator options
+        #  in this class method.
+        print("ionic-relaxation-31-delta")
+        return cls(
+            input_set_generator=RelaxSetGenerator(*args, 
+                                                  relax_cell=False,
+                                                  user_abinit_settings={"nn_name":'"chgnet"',
+                                                                        "ionmov":31,
+                                                                        "useria":1,
+                                                                        },
+                                                  **kwargs),
+            #input_set_generator=update_user_abinit_settings(input_set_generator,{"nn_name":"'chgnet'"}),
+            name=cls.name + "-31-delta-ions-only",
+        )
+
 
     @classmethod
     def full_relaxation(cls, *args, **kwargs) -> Job:

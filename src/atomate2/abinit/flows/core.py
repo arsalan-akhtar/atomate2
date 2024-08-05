@@ -12,7 +12,7 @@ from atomate2.abinit.jobs.core import (
     RelaxMaker,
     StaticMaker,
     UniformNonSCFMaker,
-    AARelaxMaker,  #AA
+    #AARelaxMaker,  #AA
     AAMLRelaxMaker, #AA
 )
 
@@ -155,8 +155,13 @@ class AAIonicRelaxFlowMaker(Maker):
     """
 
     name: str = "Ionic ML-Abinit Relaxation Flow"
-    abinit_maker: AARelaxMaker = field(default_factory=lambda:[AARelaxMaker.ionic_relaxation()])
-    abinit_ml_maker: AAMLRelaxMaker = field(default_factory=lambda:[AAMLRelaxMaker.ionic_relaxation()])
+    abinit_maker: AAMLRelaxMaker = field(default_factory=lambda:[AAMLRelaxMaker.ionic_relaxation()])
+    abinit_ml_30_none_maker: AAMLRelaxMaker = field(default_factory=lambda:[AAMLRelaxMaker.ionic_relaxation_30_none()])
+    abinit_ml_30_delta_maker: AAMLRelaxMaker = field(default_factory=lambda:[AAMLRelaxMaker.ionic_relaxation_30_delta()])
+    abinit_ml_31_none_maker: AAMLRelaxMaker = field(default_factory=lambda:[AAMLRelaxMaker.ionic_relaxation_31_none()])
+    abinit_ml_31_delta_maker: AAMLRelaxMaker = field(default_factory=lambda:[AAMLRelaxMaker.ionic_relaxation_31_delta()])
+
+
 
     def make(
         self,
@@ -179,15 +184,27 @@ class AAIonicRelaxFlowMaker(Maker):
         """
         jobs = []
         if self.abinit_maker:
-            print("abinit relaxation")
             abinit_job = self.abinit_maker[0].make(structure=structure, restart_from=restart_from)
             jobs.append(abinit_job)
 
-        if self.abinit_ml_maker:
-            print("abinit-ml relaxation")
-            abinit_ml_job = self.abinit_ml_maker[0].make(structure=structure, restart_from=restart_from)
-            jobs.append(abinit_ml_job)
-            
+        if self.abinit_ml_30_none_maker:
+            abinit_ml_30_none_job = self.abinit_ml_30_none_maker[0].make(structure=structure, restart_from=restart_from)
+            jobs.append(abinit_ml_30_none_job)
+
+        if self.abinit_ml_30_delta_maker:
+            abinit_ml_30_delta_job = self.abinit_ml_30_delta_maker[0].make(structure=structure, restart_from=restart_from)
+            jobs.append(abinit_ml_30_delta_job)
+
+        if self.abinit_ml_31_none_maker:
+            abinit_ml_31_none_job = self.abinit_ml_31_none_maker[0].make(structure=structure, restart_from=restart_from)
+            jobs.append(abinit_ml_31_none_job)
+
+        if self.abinit_ml_31_delta_maker:
+            abinit_ml_31_delta_job = self.abinit_ml_31_delta_maker[0].make(structure=structure, restart_from=restart_from)
+            jobs.append(abinit_ml_31_delta_job)
+
+
+
         return Flow(jobs, name=self.name)     
 
 
