@@ -176,6 +176,11 @@ class Atomate2Settings(BaseSettings):
         "to the simulation will be compressed. If False no file is compressed.",
     )
 
+    # SIESTA settings 
+    SIESTA_CMD: str = Field(
+            "siesta < siesta.fdf > siesta.out", description="The default command used to run SIESTA "
+            )
+
     # FHI-aims settings
     AIMS_CMD: str = Field(
         "aims.x > aims.out", description="The default command used run FHI-aims"
