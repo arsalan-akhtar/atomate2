@@ -18,8 +18,7 @@ from atomate2 import SETTINGS
 
 if TYPE_CHECKING:
     from pymatgen.core import Molecule, Structure
-    #TODO:
-    #from atomate2.siesta.schemas.task import SiestaTaskDoc
+    from atomate2.siesta.schemas.task import SiestaTaskDoc #TODO:
 logger = logging.getLogger(__name__)
 
 
