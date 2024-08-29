@@ -188,6 +188,7 @@ class Atomate2Settings(BaseSettings):
         "all the files are compressed. If 'atomate' only a selection of files related "
         "to the simulation will be compressed. If False no file is compressed.",
     )
+    
 
     # FHI-aims settings
     AIMS_CMD: str = Field(

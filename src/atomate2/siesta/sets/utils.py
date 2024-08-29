@@ -98,3 +98,82 @@ def pymatgen_to_sisl(structure,ghost_tags=None):
 # Assuming `structure` is a Pymatgen Structure object with the 'ghost_tags' property
 # geo = pymatgen_to_sisl(structure)
 # print(geo)
+
+import yaml
+
+def read_outvars(file_path):
+    """
+    Reads the OUTVARS.yml file and returns its contents as a dictionary.
+    
+    Parameters
+    ----------
+    file_path : str
+        The path to the OUTVARS.yml file.
+        
+    Returns
+    -------
+    dict
+        A dictionary containing the contents of the YAML file.
+    """
+    try:
+        with open(file_path, 'r') as file:
+            data = yaml.safe_load(file)
+        return data
+    except FileNotFoundError:
+        print(f"The file {file_path} does not exist.")
+    except yaml.YAMLError as e:
+        print(f"Error reading the YAML file: {e}")
+
+# Usage example
+#file_path = '/mnt/data/OUTVARS.yml'  # Path to your file
+#outvars_data = read_outvars(file_path)
+
+# Print the contents of the YAML file
+#print(outvars_data)
+
+
+import sisl
+import json
+
+def siesta_fdf_to_json(siesta_fdf_path, json_output_path):
+    # Read the FDF file using sisl
+    siesta_fdf = sisl.get_sile(siesta_fdf_path)
+    
+    # Create a dictionary to store the extracted information
+    fdf_data = {}
+
+    # Extracting simple key-value pairs
+    fdf_data['SCFMustConverge'] = siesta_fdf.get("SCFMustConverge")
+    fdf_data['Spin'] = siesta_fdf.get("Spin")
+    fdf_data['XC.functional'] = siesta_fdf.get("XC.functional")
+    fdf_data['XC.authors'] = siesta_fdf.get("XC.authors")
+    fdf_data['MeshCutoff'] = siesta_fdf.get("MeshCutoff")
+    fdf_data['PAO.EnergyShift'] = siesta_fdf.get("PAO.EnergyShift")
+    fdf_data['NumberOfSpecies'] = siesta_fdf.get("NumberOfSpecies")
+    fdf_data['NumberOfAtoms'] = siesta_fdf.get("NumberOfAtoms")
+    fdf_data['LatticeConstant'] = siesta_fdf.get("LatticeConstant")
+    fdf_data['AtomicCoordinatesFormat'] = siesta_fdf.get("AtomicCoordinatesFormat")
+    fdf_data['DM.UseSaveDM'] = siesta_fdf.get("DM.UseSaveDM")
+    fdf_data['SaveRho'] = siesta_fdf.get("SaveRho")
+    fdf_data['WriteFoces'] = siesta_fdf.get("WriteFoces")
+    fdf_data['LongOutput'] = siesta_fdf.get("LongOutput")
+
+    # Extracting blocks
+    fdf_data['ChemicalSpeciesLabel'] = siesta_fdf.get("ChemicalSpeciesLabel")
+    fdf_data['PAO.BasisSizes'] = siesta_fdf.get("PAO.BasisSizes")
+    fdf_data['LatticeVectors'] = siesta_fdf.get("LatticeVectors")
+    fdf_data['AtomicCoordinatesAndAtomicSpecies'] = siesta_fdf.get("AtomicCoordinatesAndAtomicSpecies")
+    fdf_data['DM.InitSpin'] = siesta_fdf.get("DM.InitSpin")
+    fdf_data['kgrid_Monkhorst_Pack'] = siesta_fdf.get("kgrid_Monkhorst_Pack")
+
+    # Convert the dictionary to a JSON formatted string
+    json_data = json.dumps(fdf_data, indent=4)
+
+    # Write the JSON string to a file
+    with open(json_output_path, 'w') as json_file:
+        json_file.write(json_data)
+
+    print(f"JSON file '{json_output_path}' created successfully.")
+
+# Example usage
+#siesta_fdf_to_json('siesta.fdf', 'siesta_input.json')

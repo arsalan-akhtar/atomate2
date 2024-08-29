@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+import os
 from glob import glob
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -10,12 +11,13 @@ from typing import TYPE_CHECKING
 from atomate2.common.files import copy_files, get_zfile, gunzip_files
 from atomate2.utils.file_client import FileClient, auto_fileclient
 from atomate2.utils.path import strip_hostname
+from monty.serialization import loadfn
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
     from pymatgen.core import Molecule, Structure
-    from atomate2.src.atomate2.siesta.sets.base_working import SiestaInputGenerator # AA TODO
+    from atomate2.siesta.sets.base import SiestaInputGenerator # AA TODO
 
 logger = logging.getLogger(__name__)
 
@@ -111,16 +113,18 @@ def write_siesta_input_set(
         If the input set is to be initialized from a previous calculation,
         the previous calc directory
     **kwargs
-        Keyword arguments to pass to :obj:`.AimsInputSet.write_input`.
+        Keyword arguments to pass to :obj:`.SiestaInputSet.write_input`.
     """
-    properties = kwargs.get("properties", [])
-    siesta_fdf_is = input_set_generator.get_input_set(
-        structure, prev_dir=prev_dir, properties=properties
-    )
+    #properties = kwargs.get("properties", [])
+    #siesta_fdf_is = input_set_generator()
+    #siesta_fdf_is = input_set_generator(
+    #    structure, prev_dir=prev_dir, properties=properties
+    #)
 
-    logger.info("Writing SIESTA input set.")
-    siesta_fdf_is.write_input(directory, **kwargs)
-
+    #logger.info("Writing SIESTA input set.")
+    #siesta_fdf_is.write(structure)
+    print(f"{directory=}")
+    input_set_generator.write_siesta_fdf(structure=structure)
 
 @auto_fileclient
 def cleanup_siesta_outputs(
@@ -148,3 +152,27 @@ def cleanup_siesta_outputs(
 
     for file in files_to_delete:
         file_client.remove(file)
+
+def load_siesta_input(dirpath: Path | str, fname: str = "siesta_input.json") :
+    """Load the AbinitInput object from a given directory.
+
+    Parameters
+    ----------
+    dirpath
+        Directory to load the AbinitInput from.
+    fname
+        Name of the json file containing the AbinitInput.
+
+    Returns
+    -------
+    AbinitInput
+        The AbinitInput object.
+    """
+    siesta_input_file = os.path.join(dirpath, f"{fname}")
+    if not os.path.exists(siesta_input_file):
+        raise NotImplementedError(
+            f"Cannot load AbinitInput from directory without {fname} file."
+        )
+    else:
+        print("EVERYTHING WAS FINE")
+    return loadfn(siesta_input_file)

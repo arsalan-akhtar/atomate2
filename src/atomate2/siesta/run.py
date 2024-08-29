@@ -53,7 +53,7 @@ def should_stop_children(
     Parameters
     ----------
     task_document : .TaskDoc
-        An FHI-aims task document.
+        An SIESTA task document.
     handle_unsuccessful : bool or str
         This is a three-way toggle on what to do if your job looks OK, but is actually
         not converged (either electronic or ionic):
@@ -79,10 +79,10 @@ def should_stop_children(
     raise RuntimeError(f"Unknown option for handle_unsuccessful: {handle_unsuccessful}")
 
 
-def run_aims_socket(
+def run_siesta_socket(
     structures_to_calculate: list[Structure | Molecule], siesta_cmd: str = None
 ) -> None:
-    """Use the ASE interface to run FHI-aims from the socket.
+    """Use the ASE interface to run SIESTA from the socket.
 
     Parameters
     ----------
