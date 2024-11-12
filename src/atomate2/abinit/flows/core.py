@@ -156,11 +156,91 @@ class AAIonicRelaxFlowMaker(Maker):
 
     name: str = "Ionic ML-Abinit Relaxation Flow"
     abinit_maker: AAMLRelaxMaker = field(default_factory=lambda:[AAMLRelaxMaker.ionic_relaxation()])
-    abinit_ml_30_none_maker: AAMLRelaxMaker = field(default_factory=lambda:[AAMLRelaxMaker.ionic_relaxation_30_none()])
-    abinit_ml_30_delta_maker: AAMLRelaxMaker = field(default_factory=lambda:[AAMLRelaxMaker.ionic_relaxation_30_delta()])
+    #abinit_ml_30_none_maker: AAMLRelaxMaker = field(default_factory=lambda:[AAMLRelaxMaker.ionic_relaxation_30_none()])
+    #abinit_ml_30_delta_maker: AAMLRelaxMaker = field(default_factory=lambda:[AAMLRelaxMaker.ionic_relaxation_30_delta()])
     abinit_ml_31_none_maker: AAMLRelaxMaker = field(default_factory=lambda:[AAMLRelaxMaker.ionic_relaxation_31_none()])
     abinit_ml_31_delta_maker: AAMLRelaxMaker = field(default_factory=lambda:[AAMLRelaxMaker.ionic_relaxation_31_delta()])
+    abinit_ml_32_none_maker: AAMLRelaxMaker = field(default_factory=lambda:[AAMLRelaxMaker.ionic_relaxation_32_none()])
+    abinit_ml_32_delta_maker: AAMLRelaxMaker = field(default_factory=lambda:[AAMLRelaxMaker.ionic_relaxation_32_delta()])
 
+
+
+    def make(
+        self,
+        structure: Structure | None = None,
+        restart_from: str | Path | None = None,
+    ) -> Flow:
+        """Create a relaxation flow.
+
+        Parameters
+        ----------
+        structure : Structure
+            A pymatgen structure object.
+        restart_from : str or Path or None
+            One previous directory to restart from.
+
+        Returns
+        -------
+        Flow
+            A relaxation flow.
+        """
+        jobs = []
+
+        #ionmove-3
+        if self.abinit_maker:
+            abinit_job = self.abinit_maker[0].make(structure=structure, restart_from=restart_from)
+            jobs.append(abinit_job)
+
+        #ionmove-30
+        # if self.abinit_ml_30_none_maker:
+        #     abinit_ml_30_none_job = self.abinit_ml_30_none_maker[0].make(structure=structure, restart_from=restart_from)
+        #     jobs.append(abinit_ml_30_none_job)
+
+        # if self.abinit_ml_30_delta_maker:
+        #     abinit_ml_30_delta_job = self.abinit_ml_30_delta_maker[0].make(structure=structure, restart_from=restart_from)
+        #     jobs.append(abinit_ml_30_delta_job)
+        
+        #ionmove-31
+        if self.abinit_ml_31_none_maker:
+            abinit_ml_31_none_job = self.abinit_ml_31_none_maker[0].make(structure=structure, restart_from=restart_from)
+            jobs.append(abinit_ml_31_none_job)
+
+        if self.abinit_ml_31_delta_maker:
+            abinit_ml_31_delta_job = self.abinit_ml_31_delta_maker[0].make(structure=structure, restart_from=restart_from)
+            jobs.append(abinit_ml_31_delta_job)
+
+        #ionmove-32
+        if self.abinit_ml_32_none_maker:
+            abinit_ml_32_none_job = self.abinit_ml_32_none_maker[0].make(structure=structure, restart_from=restart_from)
+            jobs.append(abinit_ml_32_none_job)
+
+        if self.abinit_ml_32_delta_maker:
+            abinit_ml_32_delta_job = self.abinit_ml_32_delta_maker[0].make(structure=structure, restart_from=restart_from)
+            jobs.append(abinit_ml_32_delta_job)
+
+
+        return Flow(jobs, name=self.name)     
+
+
+@dataclass
+class MLFullRelaxFlowMaker(Maker):
+    """
+    Maker to generate a ionic relaxation flow with abinit and abiml.
+
+    Parameters
+    ----------
+    name : str
+        Name of the flows produced by this maker.
+    relaxation_makers : .BaseAbinitMaker
+        The maker or list of makers to use for the relaxation flow.
+    """
+
+    name: str = "Full ML-Abinit Relaxation Flow"
+    abinit_maker: AAMLRelaxMaker = field(default_factory=lambda:[AAMLRelaxMaker.full_relaxation()])
+    abinit_ml_31_none_maker: AAMLRelaxMaker = field(default_factory=lambda:[AAMLRelaxMaker.full_relaxation_31_none()])
+    abinit_ml_31_delta_maker: AAMLRelaxMaker = field(default_factory=lambda:[AAMLRelaxMaker.full_relaxation_31_delta()])
+    abinit_ml_32_none_maker: AAMLRelaxMaker = field(default_factory=lambda:[AAMLRelaxMaker.full_relaxation_32_none()])
+    abinit_ml_32_delta_maker: AAMLRelaxMaker = field(default_factory=lambda:[AAMLRelaxMaker.full_relaxation_32_delta()])
 
 
     def make(
@@ -187,25 +267,23 @@ class AAIonicRelaxFlowMaker(Maker):
             abinit_job = self.abinit_maker[0].make(structure=structure, restart_from=restart_from)
             jobs.append(abinit_job)
 
-        if self.abinit_ml_30_none_maker:
-            abinit_ml_30_none_job = self.abinit_ml_30_none_maker[0].make(structure=structure, restart_from=restart_from)
-            jobs.append(abinit_ml_30_none_job)
-
-        if self.abinit_ml_30_delta_maker:
-            abinit_ml_30_delta_job = self.abinit_ml_30_delta_maker[0].make(structure=structure, restart_from=restart_from)
-            jobs.append(abinit_ml_30_delta_job)
-
         if self.abinit_ml_31_none_maker:
-            abinit_ml_31_none_job = self.abinit_ml_31_none_maker[0].make(structure=structure, restart_from=restart_from)
-            jobs.append(abinit_ml_31_none_job)
+           abinit_ml_31_none_job = self.abinit_ml_31_none_maker[0].make(structure=structure, restart_from=restart_from)
+           jobs.append(abinit_ml_31_none_job)
 
         if self.abinit_ml_31_delta_maker:
-            abinit_ml_31_delta_job = self.abinit_ml_31_delta_maker[0].make(structure=structure, restart_from=restart_from)
-            jobs.append(abinit_ml_31_delta_job)
+           abinit_ml_31_delta_job = self.abinit_ml_31_delta_maker[0].make(structure=structure, restart_from=restart_from)
+           jobs.append(abinit_ml_31_delta_job)
 
+        if self.abinit_ml_32_none_maker:
+           abinit_ml_32_none_job = self.abinit_ml_32_none_maker[0].make(structure=structure, restart_from=restart_from)
+           jobs.append(abinit_ml_32_none_job)
+
+        if self.abinit_ml_32_delta_maker:
+           abinit_ml_32_delta_job = self.abinit_ml_32_delta_maker[0].make(structure=structure, restart_from=restart_from)
+           jobs.append(abinit_ml_32_delta_job)
 
 
         return Flow(jobs, name=self.name)     
-
 
 
